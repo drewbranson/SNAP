@@ -1,0 +1,149 @@
+<graph id="Graph">
+  <version>1.0</version>
+  <node id="Read(2)">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>E:\SNAP\Snap_Outputs\GRD\Velocity\S1A_IW_GRDH_1SDV_20170814T015008_20170814T015033_017913_01E0B0_05E0_Orb_Stack_Vel.dim</file>
+    </parameters>
+  </node>
+  <node id="Interferogram">
+    <operator>Interferogram</operator>
+    <sources>
+      <sourceProduct refid="Read(2)"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <subtractFlatEarthPhase>true</subtractFlatEarthPhase>
+      <srpPolynomialDegree>5</srpPolynomialDegree>
+      <srpNumberPoints>501</srpNumberPoints>
+      <orbitDegree>3</orbitDegree>
+      <includeCoherence>true</includeCoherence>
+      <cohWinAz>2</cohWinAz>
+      <cohWinRg>10</cohWinRg>
+      <squarePixel>true</squarePixel>
+      <subtractTopographicPhase>false</subtractTopographicPhase>
+      <demName>SRTM 3Sec</demName>
+      <externalDEMFile/>
+      <externalDEMNoDataValue>0.0</externalDEMNoDataValue>
+      <externalDEMApplyEGM/>
+      <tileExtensionPercent>100</tileExtensionPercent>
+      <outputElevation>false</outputElevation>
+      <outputLatLon>false</outputLatLon>
+    </parameters>
+  </node>
+  <node id="TOPSAR-Deburst">
+    <operator>TOPSAR-Deburst</operator>
+    <sources>
+      <sourceProduct refid="Interferogram"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <selectedPolarisations>VV</selectedPolarisations>
+    </parameters>
+  </node>
+  <node id="TopoPhaseRemoval">
+    <operator>TopoPhaseRemoval</operator>
+    <sources>
+      <sourceProduct refid="TOPSAR-Deburst"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <orbitDegree>3</orbitDegree>
+      <demName>GETASSE30</demName>
+      <externalDEMFile/>
+      <externalDEMNoDataValue>0.0</externalDEMNoDataValue>
+      <tileExtensionPercent>100</tileExtensionPercent>
+      <outputTopoPhaseBand>true</outputTopoPhaseBand>
+      <outputElevationBand>false</outputElevationBand>
+      <outputLatLonBands>false</outputLatLonBands>
+    </parameters>
+  </node>
+  <node id="Write(2)">
+    <operator>Write</operator>
+    <sources>
+      <sourceProduct refid="Interferogram"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>C:\SNAP\Snap_Outputs\S1A_IW_SLC__1SDV_20180411T015007_20180411T015034_021413_024DDD_0B69_Orb_Stack_Ifg.dim</file>
+      <formatName>BEAM-DIMAP</formatName>
+    </parameters>
+  </node>
+  <node id="Write(3)">
+    <operator>Write</operator>
+    <sources>
+      <sourceProduct refid="TopoPhaseRemoval"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>C:\SNAP\Snap_Outputs\S1A_IW_SLC__1SDV_20180411T015007_20180411T015034_021413_024DDD_0B69_Orb_Stack_Ifg_Deb_DInSAR.dim</file>
+      <formatName>BEAM-DIMAP</formatName>
+    </parameters>
+  </node>
+  <node id="GoldsteinPhaseFiltering">
+    <operator>GoldsteinPhaseFiltering</operator>
+    <sources>
+      <sourceProduct refid="TopoPhaseRemoval"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <alpha>1.0</alpha>
+      <FFTSizeString>64</FFTSizeString>
+      <windowSizeString>3</windowSizeString>
+      <useCoherenceMask>false</useCoherenceMask>
+      <coherenceThreshold>0.2</coherenceThreshold>
+    </parameters>
+  </node>
+  <node id="SnaphuExport">
+    <operator>SnaphuExport</operator>
+    <sources>
+      <sourceProduct refid="GoldsteinPhaseFiltering"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <targetFolder>C:\SNAP\Snap_Outputs\SnaphuExports\SnaphuExports</targetFolder>
+      <statCostMode>DEFO</statCostMode>
+      <initMethod>MST</initMethod>
+      <numberOfTileRows>10</numberOfTileRows>
+      <numberOfTileCols>10</numberOfTileCols>
+      <numberOfProcessors>8</numberOfProcessors>
+      <rowOverlap>200</rowOverlap>
+      <colOverlap>200</colOverlap>
+      <tileCostThreshold>500</tileCostThreshold>
+    </parameters>
+  </node>
+  <node id="Write">
+    <operator>Write</operator>
+    <sources>
+      <sourceProduct refid="GoldsteinPhaseFiltering"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>C:\SNAP\Snap_Outputs\S1A_IW_SLC__1SDV_20180411T015007_20180411T015034_021413_024DDD_0B69_Orb_Stack_Ifg_Deb_DInSAR_Flt.dim</file>
+      <formatName>BEAM-DIMAP</formatName>
+    </parameters>
+  </node>
+  <applicationData id="Presentation">
+    <Description/>
+    <node id="Read(2)">
+      <displayPosition x="255.0" y="68.0"/>
+    </node>
+    <node id="Interferogram">
+      <displayPosition x="242.0" y="121.0"/>
+    </node>
+    <node id="TOPSAR-Deburst">
+      <displayPosition x="236.0" y="171.0"/>
+    </node>
+    <node id="TopoPhaseRemoval">
+      <displayPosition x="230.0" y="220.0"/>
+    </node>
+    <node id="Write(2)">
+      <displayPosition x="379.0" y="118.0"/>
+    </node>
+    <node id="Write(3)">
+      <displayPosition x="380.0" y="218.0"/>
+    </node>
+    <node id="GoldsteinPhaseFiltering">
+      <displayPosition x="218.0" y="264.0"/>
+    </node>
+    <node id="SnaphuExport">
+      <displayPosition x="244.0" y="318.0"/>
+    </node>
+    <node id="Write">
+      <displayPosition x="383.0" y="263.0"/>
+    </node>
+  </applicationData>
+</graph>
